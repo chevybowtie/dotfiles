@@ -13,11 +13,33 @@ alias localip="sudo ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | gr
 alias ips="sudo ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-alias ~="cd ~" # `cd` is probably faster to type though
+alias ..='cd ..'
+alias ...='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../../..'
+alias .5='cd ../../../../..'
+alias ~='cd ~'
+alias -- -='cd -'
+alias 1='cd -'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+
+# easy lists
+alias ls='ls -Fh --color=auto --group-directories-first'
+alias grep='grep --color=auto'
+
+# storage
+# remaining storage
+alias storage="df -h / --output=avail | tail -1 | xargs echo | sed 's/G/ GB/g'"
+alias df='df -H'
+alias du='du -ch'
+
+# nano
+alias nano-'nano -w'
+
+alias reboot='sudo reboot'
 
 # One of @janmoesen’s ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
@@ -31,11 +53,18 @@ alias hosts='sudo nano /etc/hosts'
 # copy working directory
 alias cwd='pwd | tr -d "\r\n" | xclip -selection clipboard'
 
-# copy file interactive
-alias cp='cp -i'
+# Basically, lets me know what just happened
+# --interactive     prompt before overwrite
+# --verbose         explain what is being done
+alias cp="cp --interactive --verbose"
+alias mv="mv --interactive --verbose"
+alias rm="rm --verbose"
 
-# move file interactive
-alias mv='mv -i'
+# make dir path
+alias mkdir='mkdir -pv'
+
+# Pretty print the path
+alias path="echo $PATH | tr -s ':' '\n'"
 
 # untar
 alias untar='tar xvf'
@@ -45,6 +74,20 @@ alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=>
 
 # Pipe my private key to my clipboard.
 alias prikey="more ~/.ssh/id_ed25519 | xclip -selection clipboard | echo '=> Private key copied to pasteboard.'"
+
+alias timer='echo "Timer started. Stop with Ctrl-D." && date "+%a, %d %b %H:%M:%S" && time cat && date "+%a, %d %b %H:%M:%S"'
+
+alias fdir='find . -type d -name'
+alias ff='find . -type f -name'
+
+
+# ------------------------------------
+# Git alias and function
+# ------------------------------------
+
+# Go to the root of a project (git root)
+alias root='cd $(git rev-parse --show-cdup)'
+
 
 # ------------------------------------
 # Docker alias and function
