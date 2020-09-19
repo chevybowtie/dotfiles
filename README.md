@@ -2,8 +2,7 @@
 ### Download and change folder
 ```
 cd ~
-git clone https://github.com/flipsidecreations/dotfiles.git
-
+https://github.com/chevybowtie/dotfiles.git
 cd dotfiles
 ```
 ### Run install
