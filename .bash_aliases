@@ -47,7 +47,7 @@ alias df='df -H'
 alias du='du -ch'
 
 # nano
-alias nano-'nano -w'
+alias nano='nano -w'
 
 alias reboot='sudo reboot'
 
