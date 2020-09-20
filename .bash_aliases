@@ -3,6 +3,7 @@ alias less='less -R'
 alias diff='colordiff'
 alias glog='git log --oneline --graph --color --all --decorate'
 alias _='sudo'
+alias fixmykey='sudo chmod 600 ~/.ssh/id_rsa'
 
 # IP addresses
 alias homeip="dig +short home.paulsturm.net"
