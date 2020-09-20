@@ -1,10 +1,6 @@
-alias gti='git'
 #alias tmux='tmux -2'
 alias less='less -R'
 alias diff='colordiff'
-alias dc='cd'
-alias nethack-online='ssh nethack@nethack.alt.org ; clear'
-alias tron-online='ssh sshtron.zachlatta.com ; clear'
 alias glog='git log --oneline --graph --color --all --decorate'
 
 # IP addresses
@@ -37,7 +33,7 @@ alias 4='cd -4'
 alias 5='cd -5'
 
 # easy lists
-alias ls='ls -Fh --color=auto --group-directories-first'
+alias ls='ls -lha --color=auto --group-directories-first'
 alias grep='grep --color=auto'
 
 # storage
