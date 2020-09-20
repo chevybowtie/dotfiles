@@ -2,6 +2,7 @@
 alias less='less -R'
 alias diff='colordiff'
 alias glog='git log --oneline --graph --color --all --decorate'
+alias _='sudo'
 
 # IP addresses
 alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
