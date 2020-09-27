@@ -8,6 +8,7 @@ cd dotfiles
 ### Run install
 ```
 ./install.sh
+source ~/.bash_profile
 ```
 
 # Uninstallation
