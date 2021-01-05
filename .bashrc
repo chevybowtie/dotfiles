@@ -121,3 +121,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# remove the need to sudo for WordOps operations
+alias wo='sudo -E wo'
