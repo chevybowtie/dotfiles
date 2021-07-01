@@ -146,7 +146,7 @@ alias wo='sudo -E wo'
 DateColumn=34 # Default is 27 for 80 character line, 34 for 92 character line
 TimeColumn=61 # Default is 49 for   "   "   "   "    61 "   "   "   "
 # Replace 76001 with your city name, zip code, GPS, etc. See: curl wttr.in/:help
-curl wttr.in/76001?0 --silent --max-time 3 > /tmp/now-weather
+curl wttr.in/76001?0Fu --silent --max-time 3 > /tmp/now-weather
 # Timeout #. Increase for slow connection---^
 readarray aWeather < /tmp/now-weather
 rm -f /tmp/now-weather
@@ -157,10 +157,10 @@ if [[ "${aWeather[0]}" == "Weather report:"* ]] ; then
 else
     WeatherSuccess=false
     echo "+============================+"
-    echo "| Weather unavailable now!!! |"
+    echo "| Weather unavailable now    |"
     echo "| Check reason with command: |"
     echo "|                            |"
-    echo "| curl wttr.in/76001?0       |" # Replace Edmonton with your city
+    echo "| curl wttr.in/76001?0Fu     |" # set your zip code here
     echo "|   --silent --max-time 3    |"
     echo "+============================+"
     echo " "
@@ -245,3 +245,5 @@ while IFS= read -r Time; do
 done < /tmp/terminal
 tput rc                     # Restore saved cursor position.
 # exit 0
+
+export PATH="/home/paul/.rbenv/shims:$PATH"
