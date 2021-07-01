@@ -5,3 +5,6 @@ if [ -n "$TMUX" ]; then
 fi
 # Trigger ~/.bashrc commands
 . ~/.bashrc
+
+# Ruby environment manager
+eval "$(rbenv init -)"
