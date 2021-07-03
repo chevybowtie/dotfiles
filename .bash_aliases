@@ -95,7 +95,8 @@ alias ff='find . -type f -name'
 
 # Go to the root of a project (git root)
 alias root='cd $(git rev-parse --show-cdup)'
-alias gitundo='!git reset --hard && git clean -fd'
+alias gitundo='git reset --hard && git clean -fd'
+alias gs='git status'
 
 # ------------------------------------
 # Docker alias and function
