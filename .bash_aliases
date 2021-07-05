@@ -20,6 +20,8 @@ update() {
 	return
 }
 
+alias randompass='cat /dev/urandom | tr -dc '\41-\176' | fold -w 12 | head'
+
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..='cd ..'
 alias ...='cd ../..'
