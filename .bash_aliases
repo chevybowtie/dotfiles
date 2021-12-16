@@ -151,6 +151,4 @@ dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
 
 alias pgdb="cd ~/projects/trunk"
 alias lucee="cd ~/projects/pgdb-lucee"
-alias 19868nprd="ssh -i ~/.ssh/pgdbnprdjmpvm.ppk pgdbvmuser@135.170.103.81"
-alias 19868prod="ssh -i ~/.ssh/pgdbprdjmp.ppk pgdbvmuser@135.170.35.105"
 
