@@ -9,6 +9,11 @@ for file in $(find . -maxdepth 1 -name ".*" -type f  -printf "%f\n" ); do
     ln -s $PWD/$file ~/$file
 done
 
+# copy any hidden directories not named git
+for directory in $(find . -maxdepth 1 -name ".[0-9a-z]*" ! -name ".git" -type d -printf "%f\n" ); do
+    cp -iRuv  $PWD/$directory ~/$directory;
+done;
+
 # Check if vim-addon installed, if not, install it automatically
 #if hash vim-addon  2>/dev/null; then
 #    echo "vim-addon (vim-scripts)  installed"
