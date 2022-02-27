@@ -20,6 +20,14 @@ update() {
 	return
 }
 
+
+# SUDO that for me
+alias please="sudo $(history -p !!)"
+
+# create a self-cleaning temp folder
+alias tmp="cd $(mktemp -d )"
+
+
 alias randompass='cat /dev/urandom | tr -dc '\41-\176' | fold -w 12 | head'
 
 # Easier navigation: .., ..., ...., ....., ~ and -
@@ -35,6 +43,8 @@ alias 2='cd -2'
 alias 3='cd -3'
 alias 4='cd -4'
 alias 5='cd -5'
+
+
 
 # easy lists
 alias ls='ls -lha --color=auto --group-directories-first'
