@@ -152,3 +152,7 @@ dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
 alias pgdb="cd ~/projects/trunk"
 alias lucee="cd ~/projects/pgdb-lucee"
 
+
+# >$ recent_mods . 10
+# finds the 10 most recently modified files in the current directory
+function recent_mods () { find "${1:-.}" -type f -printf '%TY-%Tm-%Td %TH:%TM %P\n' 2>/dev/null | sort | tail -n "${2:-10}"; }
