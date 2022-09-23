@@ -20,6 +20,11 @@ update() {
 	return
 }
 
+# easier than man pages...
+cheatsh() {
+    curl cheat.sh/"$1"
+}
+
 alias randompass='cat /dev/urandom | tr -dc '\41-\176' | fold -w 12 | head'
 
 # Easier navigation: .., ..., ...., ....., ~ and -
