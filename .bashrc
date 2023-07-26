@@ -9,6 +9,15 @@ case $- in
 esac
 
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin
+VERSION=v18.12.1
+DISTRO=linux-x64
+PATH="/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH"
+
+# git autocompletions for Ubuntu
+source /usr/share/bash-completion/completions/git
+
+# VS Code path
+export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
 
 # Get External IP / Internet Speed
 alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
@@ -303,3 +312,13 @@ function parse_git_dirty {
 
 
 export PATH="/home/paul/.rbenv/shims:$PATH"
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+  for dir in "$HOME/bin"/*; do
+    if [ -d "$dir" ]; then
+      export PATH="$PATH:$dir"
+    fi
+  done
+fi
