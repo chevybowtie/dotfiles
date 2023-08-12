@@ -1,15 +1,18 @@
+######################################
+# TIP: SEE TABLE in ~/.bash_profile
+######################################
+
 #alias tmux='tmux -2'
 alias less='less -R'
 alias diff='colordiff'
-alias glog='git log --oneline --graph --color --all --decorate'
 alias _='sudo'
 alias fixmykey='sudo chmod 600 ~/.ssh/id_rsa'
 
+alias yarn='yarnpkg'
+
 # IP addresses
 alias homeip="dig +short home.paulsturm.net"
-alias localip="sudo ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*' | grep -v '127.0.0.1'"
-alias ips="sudo ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-
+alias localip="ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1'"
 
 # Easier updates
 update() {
@@ -20,6 +23,7 @@ update() {
 	echo "Update complete"
 	return
 }
+
 # easier than man pages...
 cheatsh() {
     curl cheat.sh/"$1"
@@ -52,7 +56,7 @@ alias df='df -H'
 alias du='du -ch'
 
 # nano
-alias nano='nano -w'
+alias nano='nano -l'
 
 alias reboot='sudo reboot'
 
@@ -104,6 +108,11 @@ alias ff='find . -type f -name'
 alias root='cd $(git rev-parse --show-cdup)'
 alias gitundo='git reset --hard && git clean -fd'
 alias gs='git status'
+alias glog='git log --oneline --graph --color --all --decorate'
+
+# To avoid .git index corruption and preserve UTF-8 BOM
+# Touches only those files (-ic0 option), that contain windows line breaks, all other files are skipped
+alias fixlineendings='find . -type f -print0 | xargs -0 dos2unix -ic0 | xargs -0 dos2unix -b'
 
 # ------------------------------------
 # Docker alias and function
@@ -157,7 +166,30 @@ dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
 alias pgdb="cd ~/projects/trunk"
 alias lucee="cd ~/projects/pgdb-lucee"
 
+alias grepcontent='grep -rni'
 
 # >$ recent_mods . 10
 # finds the 10 most recently modified files in the current directory
 function recent_mods () { find "${1:-.}" -type f -printf '%TY-%Tm-%Td %TH:%TM %P\n' 2>/dev/null | sort | tail -n "${2:-10}"; }
+
+# remove the need to sudo for WordOps operations
+alias wo='sudo -E wo'
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# Get External IP / Internet Speed
+alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
+alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+
+# work changes
+alias st='/mnt/c/Program\ Files\ \(x86\)/Atlassian/Sourcetree/SourceTree.exe'
