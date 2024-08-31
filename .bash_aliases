@@ -45,6 +45,12 @@ alias 3='cd -3'
 alias 4='cd -4'
 alias 5='cd -5'
 
+# logins
+alias session_opened='grep "session opened for user" /var/log/auth.log'
+alias publickey_accepted='grep "Accepted publickey" /var/log/auth.log'
+alias password_accepted='grep "Accepted password" /var/log/auth.log'
+alias password_failed='grep "Failed password" /var/log/auth.log'
+
 # easy lists
 alias ls='ls -lha --color=auto --group-directories-first'
 alias grep='grep --color=auto'
