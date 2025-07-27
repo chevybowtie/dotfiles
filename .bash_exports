@@ -1,11 +1,11 @@
+######################################
+# TIP: SEE TABLE in ~/.bash_profile
+######################################
+
 export TERM=xterm-256color
 
 export LESS='-R'
 export LESSOPEN='|~/.lessfilter %s'
-
-# perl plenv
-# export PATH="$HOME/.plenv/bin:$PATH"
-# eval "$(plenv init -)"
 
 # golang
 export GOPATH=~/gocode
@@ -15,10 +15,23 @@ export PATH="$GOPATH/bin:${PATH}:/usr/local/go/bin"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+export PATH="/home/paul/.rbenv/shims:$PATH"
+export GEM_HOME=~/.ruby/
+export PATH="$PATH:~/.ruby/bin"
 
-export EDITOR=/usr/bin/vim
+export EDITOR=/usr/bin/nano
 
-# pythone pyenv
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv virtualenv-init -)"
+
+# for self hosted kubernetes
+export no_proxy=$no_proxy,*.docker.internal
+
+# VS Code path
+export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
+
+# work additions
+# export REQUESTS_CA_BUNDLE=~/certs/xxxxxx.crt
+# export REQUESTS_CA_BUNDLE=~/certs/xxxxxx.crt
+
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin
+
++export PATH="$PATH:$HOME/.local/bin"
