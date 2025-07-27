@@ -338,7 +338,23 @@ export NVM_DIR="$HOME/.nvm"
 
 
 ollamal() {
+  if [ $# -eq 0 ]; then
+    echo "Usage:"
+    echo "  ollamal \"prompt\""
+    echo "  ollamal model \"prompt\""
+    return 1
+  fi
+
+  if [ $# -eq 1 ]; then
+    model="llama3.3"
+    prompt="$1"
+  else
+    model="$1"
+    prompt="$2"
+  fi
+
   curl -s http://100.99.233.24:11434/api/generate \
     -H "Content-Type: application/json" \
-    -d "{\"model\":\"$1\",\"prompt\":\"$2\"}" | jq -r '.response'
+    -d "{\"model\":\"$model\",\"prompt\":\"$prompt\"}" | \
+    jq -r -c '.response' | tr -d '\n'; echo
 }
