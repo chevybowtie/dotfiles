@@ -18,3 +18,7 @@ export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 export EDITOR=/usr/bin/vim
 
+# pythone pyenv
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"

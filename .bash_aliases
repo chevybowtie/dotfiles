@@ -4,6 +4,7 @@ alias diff='colordiff'
 alias glog='git log --oneline --graph --color --all --decorate'
 alias _='sudo'
 alias fixmykey='sudo chmod 600 ~/.ssh/id_rsa'
+alias pls='sudo !!'
 
 # IP addresses
 alias homeip="dig +short home.paulsturm.net"
@@ -19,6 +20,7 @@ update() {
 	echo "Update complete"
 	return
 }
+alias alu='apt list --upgradeable'
 
 # easier than man pages...
 cheatsh() {

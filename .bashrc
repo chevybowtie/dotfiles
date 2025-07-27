@@ -8,7 +8,7 @@ case $- in
       *) return;;
 esac
 
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin:/home/paul/.local/bin
 
 # Get External IP / Internet Speed
 alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
@@ -303,3 +303,14 @@ function parse_git_dirty {
 
 
 export PATH="/home/paul/.rbenv/shims:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+ollama() {
+  curl -s http://100.99.233.24:11434/api/generate \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"$1\",\"prompt\":\"$2\"}" | jq -r '.response'
+}
