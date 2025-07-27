@@ -348,6 +348,7 @@ ollama() {
     return 1
   fi
 
+
   if [ $# -eq 0 ]; then
     echo "Usage:"
     echo "  ollama \"prompt\""
@@ -362,6 +363,7 @@ ollama() {
     model="$1"
     prompt="$2"
   fi
+
 
   # Send the request and capture raw output
   response=$(curl -s "http://$host:11434/api/generate" \
