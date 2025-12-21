@@ -31,6 +31,53 @@ cheatsh(){
 	curl cheat.sh/"$1"
 }
 
+# query ollama - `ollama {model} "{query}"`
+ollama() {
+  if [ -n "$OLLAMA_REMOTE_HOST" ]; then
+    host="$OLLAMA_REMOTE_HOST"
+  elif curl -s --max-time 2 http://100.99.233.24:11434 > /dev/null; then
+    host="100.99.233.24"
+  elif curl -s --max-time 1 http://localhost:11434 > /dev/null; then
+    host="localhost"
+  else
+    echo "❌ Could not reach an Ollama server (local or remote)"
+    return 1
+  fi
+
+
+  if [ $# -eq 0 ]; then
+    echo "Usage:"
+    echo "  ollama \"prompt\""
+    echo "  ollama model \"prompt\""
+    return 1
+  fi
+
+  if [ $# -eq 1 ]; then
+    model="llama3.3"
+    prompt="$1"
+  else
+    model="$1"
+    prompt="$2"
+  fi
+
+
+  # Send the request and capture raw output
+  response=$(curl -s "http://$host:11434/api/generate" \
+    -H "Content-Type: application/json" \
+    -d "{\"model\":\"$model\",\"prompt\":\"$prompt\"}")
+
+  # Check for error message
+  if echo "$response" | jq -e '.error' > /dev/null; then
+    echo "❌ Error: $(echo "$response" | jq -r '.error')"
+    return 1
+  fi
+
+  # Print response normally
+  echo "$response" | jq -r -c '.response' | tr -d '\n'; echo
+}
+
+
+
 # SUDO that for me
 alias please="sudo $(history -p !!)"
 
