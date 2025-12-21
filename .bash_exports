@@ -21,7 +21,6 @@ export PATH="$PATH:~/.ruby/bin"
 
 export EDITOR=/usr/bin/nano
 
-
 # for self hosted kubernetes
 export no_proxy=$no_proxy,*.docker.internal
 
@@ -34,4 +33,4 @@ export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
 
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin
 
-+export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
