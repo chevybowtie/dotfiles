@@ -4,6 +4,7 @@ alias diff='colordiff'
 alias glog='git log --oneline --graph --color --all --decorate'
 alias _='sudo'
 alias fixmykey='sudo chmod 600 ~/.ssh/id_rsa'
+alias alu='apt list --upgradable'
 
 # IP addresses
 alias homeip="dig +short home.paulsturm.net"
@@ -20,6 +21,10 @@ update() {
 	return
 }
 
+# replace man for most cases
+cheatsh(){
+	curl cheat.sh/"$1"
+}
 
 # SUDO that for me
 alias please="sudo $(history -p !!)"
