@@ -114,6 +114,10 @@ alias timer='echo "Timer started. Stop with Ctrl-D." && date "+%a, %d %b %H:%M:%
 alias fdir='find . -type d -name'
 alias ff='find . -type f -name'
 
+# Get External IP / Internet Speed
+alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
+alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+
 
 # ------------------------------------
 # Git alias and function

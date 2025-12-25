@@ -11,7 +11,7 @@ case $- in
       *) return;;
 esac
 
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin:/home/paul/.local/bin
+# export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin:
 VERSION=v18.12.1
 DISTRO=linux-x64
 PATH="/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH"
@@ -19,12 +19,58 @@ PATH="/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH"
 # git autocompletions for Ubuntu
 source /usr/share/bash-completion/completions/git
 
-# VS Code path
-export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
 
-# Get External IP / Internet Speed
-alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
-alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+
+git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+# get current branch in git repo
+function parse_git_branch() {
+        BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+        if [ ! "${BRANCH}" == "" ]
+        then
+                STAT=`parse_git_dirty`
+                echo "[${BRANCH}${STAT}]"
+        else
+                echo ""
+        fi
+}
+
+# get current status of git repo
+function parse_git_dirty {
+        status=`git status 2>&1 | tee`
+        dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
+        untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
+        ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
+        newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
+        renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
+        deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
+        bits=''
+        if [ "${renamed}" == "0" ]; then
+                bits=">${bits}"
+        fi
+        if [ "${ahead}" == "0" ]; then
+                bits="*${bits}"
+        fi
+        if [ "${newfile}" == "0" ]; then
+                bits="+${bits}"
+        fi
+        if [ "${untracked}" == "0" ]; then
+                bits="?${bits}"
+        fi
+        if [ "${deleted}" == "0" ]; then
+                bits="x${bits}"
+        fi
+        if [ "${dirty}" == "0" ]; then
+                bits="!${bits}"
+        fi
+        if [ ! "${bits}" == "" ]; then
+                echo " ${bits}"
+        else
+                echo ""
+        fi
+}
 
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -75,12 +121,6 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-if [ "$color_prompt" = yes ]; then
-    PS1="\[\033[0;31m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h'; fi)\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\]"
-else
-    PS1='┌──[\u@\h]─[\w]\n└──╼ \$ '
-fi
-
 # Set 'man' colors
 if [ "$color_prompt" = yes ]; then
 	man() {
@@ -98,14 +138,45 @@ fi
 
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir - in WSL, this is the prompt
+
+# esac
+
+# ...existing code...
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]\[\033[0;31m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h'; fi)\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\225\274 \!:\[\e[0;38;5;105m\]\t\[\e[0m\] \[\e[0;2;3;38;5;252m\]\$(parse_git_branch)\[\e[0m\] \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\]"
+    # set terminal title only and define an easy-to-edit prompt (do NOT overwrite later)
+    PS1_title="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]"
+
+    # colors (use \[ \] around non-printing sequences)
+    RED="\[\e[0;31m\]"
+    GREEN="\[\e[0;32m\]"
+    YELLOW="\[\e[01;33m\]"
+    CYAN="\[\e[01;96m\]"
+    RESET="\[\e[0m\]"
+
+    # capture last command exit code
+    PROMPT_COMMAND='LAST_EXIT=$?'
+    exit_indicator() { [[ ${LAST_EXIT:-0} -ne 0 ]] && printf "%s" "[✗]"; }
+
+    # virtualenv label (prevent activation script from prepending)
+    export VIRTUAL_ENV_DISABLE_PROMPT=1
+    VENV_PROMPT='$( [ -n "$VIRTUAL_ENV" ] && printf "─(${VIRTUAL_ENV##*/}) ")'
+
+    if [[ ${EUID} == 0 ]]; then
+        USER_HOST="${RED}root${YELLOW}@${CYAN}\h${RESET}"
+    else
+        USER_HOST="${RESET}\u${YELLOW}@${CYAN}\h${RESET}"
+    fi
+    # build prompt (multiline, easy to edit)
+    PS1="${PS1_title}${RED}┌─\$(exit_indicator)─[${USER_HOST}${RED}]─[${GREEN}\w${RED}]${VENV_PROMPT}${RESET}\n${RED}└──╼ \$(parse_git_branch) ${YELLOW}\\$ ${RESET}"
     ;;
 *)
     ;;
 esac
+
+
+
+
 
 
 # Alias definitions.
@@ -117,9 +188,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
+# enable programmable completion features 
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -153,7 +222,7 @@ TimeColumn=61 # Default is 49 for   "   "   "   "    61 "   "   "   "
 curl wttr.in/76001?0Fu --silent --max-time 3 > /tmp/now-weather
 # Timeout #. Increase for slow connection---^
 readarray aWeather < /tmp/now-weather
-rm -f /tmp/now-weather
+rm /tmp/now-weather 2>/dev/null
 # Was valid weather report found or an error message?
 if [[ "${aWeather[0]}" == "Weather report:"* ]] ; then
     WeatherSuccess=true
@@ -250,69 +319,16 @@ done < /tmp/terminal
 tput rc                     # Restore saved cursor position.
 # exit 0
 
-git_branch() {
-  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
-}
 
-# get current branch in git repo
-function parse_git_branch() {
-        BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-        if [ ! "${BRANCH}" == "" ]
-        then
-                STAT=`parse_git_dirty`
-                echo "[${BRANCH}${STAT}]"
-        else
-                echo ""
-        fi
-}
-
-# get current status of git repo
-function parse_git_dirty {
-        status=`git status 2>&1 | tee`
-        dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
-        untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
-        ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
-        newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
-        renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
-        deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
-        bits=''
-        if [ "${renamed}" == "0" ]; then
-                bits=">${bits}"
-        fi
-        if [ "${ahead}" == "0" ]; then
-                bits="*${bits}"
-        fi
-        if [ "${newfile}" == "0" ]; then
-                bits="+${bits}"
-        fi
-        if [ "${untracked}" == "0" ]; then
-                bits="?${bits}"
-        fi
-        if [ "${deleted}" == "0" ]; then
-                bits="x${bits}"
-        fi
-        if [ "${dirty}" == "0" ]; then
-                bits="!${bits}"
-        fi
-        if [ ! "${bits}" == "" ]; then
-                echo " ${bits}"
-        else
-                echo ""
-        fi
-}
-
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-  for dir in "$HOME/bin"/*; do
-    if [ -d "$dir" ]; then
-      export PATH="$PATH:$dir"
-    fi
-  done
-fi
 
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+# Trigger exports
+if [ -f ~/.bash_exports ]; then
+    . ~/.bash_exports
+fi
+

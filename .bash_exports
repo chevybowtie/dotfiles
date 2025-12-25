@@ -12,12 +12,12 @@ export GOPATH=~/gocode
 export PATH="$GOPATH/bin:${PATH}:/usr/local/go/bin"
 
 # ruby rbenv
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
-export PATH="/home/paul/.rbenv/shims:$PATH"
-export GEM_HOME=~/.ruby/
-export PATH="$PATH:~/.ruby/bin"
+# export PATH="$HOME/.rbenv/bin:$PATH"
+# eval "$(rbenv init -)"
+# export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+# export PATH="/home/paul/.rbenv/shims:$PATH"
+# export GEM_HOME=~/.ruby/
+# export PATH="$PATH:~/.ruby/bin"
 
 export EDITOR=/usr/bin/nano
 
@@ -25,7 +25,7 @@ export EDITOR=/usr/bin/nano
 export no_proxy=$no_proxy,*.docker.internal
 
 # VS Code path
-export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
+# export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
 
 # work additions
 # export REQUESTS_CA_BUNDLE=~/certs/xxxxxx.crt
@@ -33,4 +33,23 @@ export PATH="$PATH:/mnt/c/Program Files/Microsoft VS Code/bin"
 
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin
 
-export PATH="$PATH:$HOME/.local/bin"
+
+# set PATH so it includes user's private bins if any exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+  for dir in "$HOME/bin"/*; do
+    if [ -d "$dir" ]; then
+      export PATH="$PATH:$dir"
+    fi
+  done
+fi
+
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+  for dir in "$HOME/.local/bin"/*; do
+    if [ -d "$dir" ]; then
+      export PATH="$PATH:$dir"
+    fi
+  done
+fi
+
