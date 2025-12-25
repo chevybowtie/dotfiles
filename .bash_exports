@@ -53,3 +53,9 @@ if [ -d "$HOME/.local/bin" ] ; then
   done
 fi
 
+
+# unique exports to this PC
+if [ -f "$HOME/.bash_exports_overrides" ] ; then
+  # source any overrides
+  . "$HOME/.bash_exports_overrides"
+fi
