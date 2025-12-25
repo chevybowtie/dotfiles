@@ -167,8 +167,18 @@ xterm*|rxvt*)
     else
         USER_HOST="${RESET}\u${YELLOW}@${CYAN}\h${RESET}"
     fi
+
+    # SSH indicator
+    if [ -n "${SSH_CONNECTION:-}" ]; then
+        SSH_INDICATOR="${YELLOW}[SSH]${RESET} "
+    else
+        SSH_INDICATOR=""
+    fi
+
+    HOST_PART="${SSH_INDICATOR}${USER_HOST}"
+
     # build prompt (multiline, easy to edit)
-    PS1="${PS1_title}${RED}┌─\$(exit_indicator)─[${USER_HOST}${RED}]─[${GREEN}\w${RED}]${VENV_PROMPT}${RESET}\n${RED}└──╼ \$(parse_git_branch) ${YELLOW}\\$ ${RESET}"
+    PS1="${PS1_title}${RED}┌─\$(exit_indicator)─[${HOST_PART}${RED}]─[${GREEN}\w${RED}]${VENV_PROMPT}${RESET}\n${RED}└──╼ \$(parse_git_branch) ${YELLOW}\\$ ${RESET}"
     ;;
 *)
     ;;
