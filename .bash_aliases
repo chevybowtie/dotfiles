@@ -55,10 +55,10 @@ alias 4='cd -4'
 alias 5='cd -5'
 
 # logins
-alias session_opened='grep "session opened for user" /var/log/auth.log'
-alias publickey_accepted='grep "Accepted publickey" /var/log/auth.log'
-alias password_accepted='grep "Accepted password" /var/log/auth.log'
-alias password_failed='grep "Failed password" /var/log/auth.log'
+alias session_opened='sudo grep "session opened for user" /var/log/auth.log'
+alias publickey_accepted='sudo grep "Accepted publickey" /var/log/auth.log'
+alias password_accepted='sudo grep "Accepted password" /var/log/auth.log'
+alias password_failed='sudo grep "Failed password" /var/log/auth.log'
 
 # easy lists
 alias ls='ls -lha --color=auto --group-directories-first'
@@ -206,11 +206,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-# Get External IP / Internet Speed
-alias myip="curl https://ipinfo.io/json" # or /ip for plain-text ip
-alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
-
-
 
 
 
@@ -232,6 +227,8 @@ ollama() {
     host="$OLLAMA_REMOTE_HOST"
   elif curl -s --max-time 2 http://100.99.233.24:11434 > /dev/null; then
     host="100.99.233.24"
+  elif curl -s --max-time 2 http://10.5.20.157:11434 > /dev/null; then
+    host="10.5.20.157"
   elif curl -s --max-time 1 http://localhost:11434 > /dev/null; then
     host="localhost"
   else
