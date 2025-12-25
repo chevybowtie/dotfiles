@@ -218,23 +218,9 @@ ollama() {
   local max_lines="${OLLAMA_MAX_LINES:-400}"        # stdin lines
   local max_chars="${OLLAMA_MAX_CHARS:-60000}"      # stdin chars (approx, after line trim)
   local stream_default="${OLLAMA_STREAM:-1}"        # 1=stream, 0=non-stream
+  local ip_try_list=("${OLLAMA_IP_TRY_LIST:-"100.99.233.24" "10.5.20.157" "localhost"}")     
+                                                    # optional custom IP list 
   local host
-
-  # -----------------------------
-  # Host selection
-  # -----------------------------
-  if [ -n "$OLLAMA_REMOTE_HOST" ]; then
-    host="$OLLAMA_REMOTE_HOST"
-  elif curl -s --max-time 2 http://100.99.233.24:11434 > /dev/null; then
-    host="100.99.233.24"
-  elif curl -s --max-time 2 http://10.5.20.157:11434 > /dev/null; then
-    host="10.5.20.157"
-  elif curl -s --max-time 1 http://localhost:11434 > /dev/null; then
-    host="localhost"
-  else
-    echo "❌ Could not reach an Ollama server (local or remote)" >&2
-    return 1
-  fi
 
   # -----------------------------
   # Help
@@ -257,7 +243,8 @@ Env:
   OLLAMA_MAX_LINES        Default max stdin lines
   OLLAMA_MAX_CHARS        Default max stdin chars
   OLLAMA_STREAM           1=stream default, 0=non-stream
-
+  OLLAMA_IP_TRY_LIST      Space-separated list of IPs to try (default: "${ip_try_list[*]}")
+  
 Examples:
   tail -n 500 /var/log/syslog | ollama gpt-oss "What is the root cause? Cite evidence lines."
   ollama llama3 "Summarize errors and propose fixes" < /var/log/myapp.log
@@ -265,6 +252,28 @@ Examples:
 EOF
     return 0
   fi
+
+  # -----------------------------
+  # Host selection
+  # -----------------------------
+  if [ -n "$OLLAMA_REMOTE_HOST" ]; then
+    host="$OLLAMA_REMOTE_HOST"
+  else
+    local timeout_list=(2 2 1)  # Corresponding timeouts for each IP
+    for i in "${!ip_try_list[@]}"; do
+      local ip="${ip_try_list[$i]}"
+      local timeout="${timeout_list[$i]}"
+      if curl -s --max-time "$timeout" "http://$ip:11434" > /dev/null; then
+        host="$ip"
+        break
+      fi
+    done
+    if [ -z "$host" ]; then
+      echo "❌ Could not reach an Ollama server (local or remote)" >&2
+      return 1
+    fi
+  fi
+
 
   # -----------------------------
   # Parse options (simple)
