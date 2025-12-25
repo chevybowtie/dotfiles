@@ -355,3 +355,11 @@ EOF
     echo "$response" | jq -r -c '.response' | tr -d '\n'; echo
   fi
 }
+
+
+
+# unique aliases to this PC
+if [ -f "$HOME/.bash_aliases_overrides" ] ; then
+  # source any overrides
+  . "$HOME/.bash_aliases_overrides"
+fi
