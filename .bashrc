@@ -19,6 +19,27 @@ PATH="/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH"
 # git autocompletions for Ubuntu
 source /usr/share/bash-completion/completions/git
 
+# check if github.com/chevybowtie/dotfiles has a newer version
+# check once per day if remote dotfiles repo has a new commit
+DOTFILES_REPO="chevybowtie/dotfiles"
+_LAST_CHECK="$HOME/.last_dotfiles_check"
+_STORED_SHA="$HOME/.dotfiles_latest_sha"
+_INTERVAL=86400  # seconds (86400 = 1 day)
+
+if [ -t 1 ]; then                        # only for interactive shells
+  if [ ! -f "$_LAST_CHECK" ] || [ $(( $(date +%s) - $(stat -c %Y "$_LAST_CHECK" 2>/dev/null || echo 0) )) -ge "$_INTERVAL" ]; then
+    latest_sha=$(curl -s "https://api.github.com/repos/$DOTFILES_REPO/commits?per_page=1" \
+                 | sed -n 's/.*"sha": "\([^"]*\)".*/\1/p' | head -n1)
+    if [ -n "$latest_sha" ]; then
+      if [ -f "$_STORED_SHA" ]; then old_sha=$(cat "$_STORED_SHA"); else old_sha=; fi
+      if [ "$old_sha" != "$latest_sha" ]; then
+        printf "\033[1;33m==> New dotfiles available: https://github.com/%s\033[0m\n" "$DOTFILES_REPO"
+        echo "$latest_sha" > "$_STORED_SHA"
+      fi
+      touch "$_LAST_CHECK"
+    fi
+  fi
+fi
 
 
 git_branch() {
