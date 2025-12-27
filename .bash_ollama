@@ -1,0 +1,127 @@
+ollama() {
+  # -----------------------------
+  # Config (override via env vars)
+  # -----------------------------
+  local default_model="${OLLAMA_DEFAULT_MODEL:-gpt-oss}"
+  local max_lines="${OLLAMA_MAX_LINES:-400}"
+  local max_chars="${OLLAMA_MAX_CHARS:-60000}"
+  local stream_default="${OLLAMA_STREAM:-1}"
+  local ip_try_raw="${OLLAMA_IP_TRY_LIST:-"100.99.233.24 10.5.20.157 localhost"}"
+  read -r -a ip_try_list <<<"$ip_try_raw"
+  local host
+  # -----------------------------
+  # Help
+  # -----------------------------
+  if [ $# -eq 0 ] || [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    cat <<'EOF'
+Usage:
+  ollama [MODEL] "PROMPT"              # send prompt
+  ollama [MODEL] "PROMPT" < logfile    # include stdin as log content
+
+Options:
+  --no-stream         Disable streaming; print once at end
+  --stream            Force streaming (default)
+  --max-lines N       Max stdin lines (default: env/400)
+  --max-chars N       Max stdin chars (default: env/60000)
+
+Env:
+  OLLAMA_REMOTE_HOST      Force host
+  OLLAMA_DEFAULT_MODEL    Default model
+  OLLAMA_MAX_LINES        Default max stdin lines
+  OLLAMA_MAX_CHARS        Default max stdin chars
+  OLLAMA_STREAM           1=stream default, 0=non-stream
+  OLLAMA_IP_TRY_LIST      Space-separated IPs to try
+EOF
+    return 0
+  fi
+  # -----------------------------
+  # Host selection
+  # -----------------------------
+  if [ -n "$OLLAMA_REMOTE_HOST" ]; then
+    host="$OLLAMA_REMOTE_HOST"
+  else
+    local timeout_list=(2 2 1)
+    for i in "${!ip_try_list[@]}"; do
+      local ip="${ip_try_list[$i]}"
+      local timeout="${timeout_list[$i]:-2}"
+      if curl -s --max-time "$timeout" "http://$ip:11434" >/dev/null; then
+        host="$ip"
+        break
+      fi
+    done
+    if [ -z "$host" ]; then
+      echo "❌ Could not reach an Ollama server" >&2
+      return 1
+    fi
+  fi
+  # -----------------------------
+  # Parse options
+  # -----------------------------
+  local stream="$stream_default"
+  while [[ "$1" == --* ]]; do
+    case "$1" in
+      --no-stream) stream=0; shift ;;
+      --stream)    stream=1; shift ;;
+      --max-lines) max_lines="$2"; shift 2 ;;
+      --max-chars) max_chars="$2"; shift 2 ;;
+      *)
+        echo "❌ Unknown option: $1" >&2
+        return 2 ;;
+    esac
+  done
+  # -----------------------------
+  # Args: MODEL + PROMPT
+  # -----------------------------
+  local model prompt
+  if [ $# -eq 1 ]; then
+    model="$default_model"
+    prompt="$1"
+  else
+    model="$1"
+    prompt="$2"
+  fi
+  # -----------------------------
+  # Read stdin (optional)
+  # -----------------------------
+  if [ ! -t 0 ]; then
+    local stdin_content
+    stdin_content="$(cat | tail -n "$max_lines" | head -c "$max_chars")"
+    prompt="$prompt"$'\n\n'"--- BEGIN STDIN (truncated: max_lines=$max_lines, max_chars=$max_chars) ---"$'\n'"$stdin_content"$'\n'"--- END STDIN ---"
+  fi
+  # -----------------------------
+  # Build payload
+  # -----------------------------
+  local payload
+  payload="$(jq -n \
+    --arg model "$model" \
+    --arg prompt "$prompt" \
+    --argjson stream "$([[ "$stream" == "1" ]] && echo true || echo false)" \
+    '{model:$model, prompt:$prompt, stream:$stream}')"
+  # -----------------------------
+  # Call API
+  # -----------------------------
+  if [ "$stream" -eq 1 ]; then
+    curl -s "http://$host:11434/api/generate" \
+      -H "Content-Type: application/json" \
+      -d "$payload" |
+    while IFS= read -r line; do
+      [ -z "$line" ] && continue
+      if echo "$line" | jq -e '.error' >/dev/null 2>&1; then
+        echo -e "\n❌ Error: $(echo "$line" | jq -r '.error')" >&2
+        return 1
+      fi
+      echo "$line" | jq -r -c '.response // empty' | tr -d '\n'
+    done
+    echo
+  else
+    local response
+    response="$(curl -s "http://$host:11434/api/generate" \
+      -H "Content-Type: application/json" \
+      -d "$payload")"
+    if echo "$response" | jq -e '.error' >/dev/null 2>&1; then
+      echo "❌ Error: $(echo "$response" | jq -r '.error')" >&2
+      return 1
+    fi
+    echo "$response" | jq -r -c '.response' | tr -d '\n'; echo
+  fi
+}

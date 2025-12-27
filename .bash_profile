@@ -65,7 +65,6 @@ fi
 # Trigger ~/.bashrc commands
 . ~/.bashrc
 
-# You may want to put all your exports into a separate file
 # Trigger exports
 if [ -f ~/.bash_exports ]; then
     . ~/.bash_exports
@@ -78,8 +77,3 @@ fi
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 # [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
 cd ~
-
-# the following was moved to .bashrc so VSCode would use it
-#VERSION=v18.12.1
-#DISTRO=linux-x64
-#PATH="/usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin:$PATH"
